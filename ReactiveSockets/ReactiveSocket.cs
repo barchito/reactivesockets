@@ -9,11 +9,9 @@
     using System.Reactive.Subjects;
     using System.Threading;
     using System.Threading.Tasks;
-    using ReactiveSockets.Properties;
     using System.IO;
     using System.Reactive;
     using System.Reactive.Threading.Tasks;
-    using Diagnostics;
 
     /// <summary>
     /// Implements the reactive socket base class, which is used 
@@ -22,8 +20,7 @@
     /// </summary>
     public class ReactiveSocket : IReactiveSocket, IDisposable
     {
-        private static readonly ITracer tracer = Tracer.Get<ReactiveSocket>();
-
+    
         private bool disposed;
         private TcpClient client;
         // This allows us to write to the underlying socket in a 
@@ -62,7 +59,6 @@
         internal ReactiveSocket(TcpClient client)
             : this(MaximumBufferSize)
         {
-            tracer.ReactiveSocketCreated();
             Connect(client);
         }
 
@@ -158,27 +154,23 @@
 
             if (disposed)
             {
-                tracer.ReactiveSocketReconnectDisposed();
                 throw new ObjectDisposedException(this.ToString());
             }
 
             if (!client.Connected)
             {
-                tracer.ReactiveSocketReceivedDisconnectedTcpClient();
                 throw new InvalidOperationException("Client must be connected");
             }
 
             // We're connecting an already connected client.
             if (this.client == client && client.Connected)
             {
-                tracer.ReactiveSocketAlreadyConnected();
                 return;
             }
 
             // We're switching to a new client?
             if (this.client != null && this.client != client)
             {
-                tracer.ReactiveSocketSwitchingUnderlyingClient();
                 Disconnect();
             }
 
@@ -196,7 +188,6 @@
 
             Connected(this, EventArgs.Empty);
 
-            tracer.ReactiveSocketConnected();
         }
 
         /// <summary>
@@ -205,7 +196,7 @@
         protected void Disconnect()
         {
             if (!IsConnected)
-                throw new InvalidOperationException(Strings.TcpClientSocket.DisconnectingNotConnected);
+                throw new InvalidOperationException("its not connected");
 
             Disconnect(false);
         }
@@ -228,8 +219,7 @@
 
             if (IsConnected)
             {
-                client.Close();
-                tracer.ReactiveSocketDisconnected();
+                client.Dispose();
             }
 
             client = null;
@@ -252,7 +242,6 @@
             sender.OnCompleted();
             receiverTermination.OnNext(Unit.Default);
 
-            tracer.ReactiveSocketDisposed();
 
             Disposed(this, EventArgs.Empty);
         }
@@ -263,15 +252,15 @@
             this.readSubscription = Observable.Defer(() => 
                 {
                     var buffer = new byte[this.ReceiveBufferSize];
-                    return Observable.FromAsyncPattern<byte[], int, int, int>(stream.BeginRead, stream.EndRead)(buffer, 0, buffer.Length)
-                        .Select(x => buffer.Take(x).ToArray());
+
+                    return stream.ReadAsync(buffer, 0, buffer.Length).ToObservable<int>().Select(x => buffer.Take(x).ToArray());
+
                 })
                 .Repeat()
                 .TakeWhile(x => x.Any())
                 .SelectMany(x => x)
                 .Subscribe(x => this.received.Add(x), ex =>
                 {
-                    tracer.ReactiveSocketReadFailed(ex);
                     Disconnect(false);
                 }, () => Disconnect(false));
         }
@@ -292,13 +281,11 @@
         {
             if (disposed)
             {
-                tracer.ReactiveSocketSendDisposed();
                 throw new ObjectDisposedException(this.ToString());
             }
 
             if (!IsConnected)
             {
-                tracer.ReactiveSocketSendDisconnected();
                 throw new InvalidOperationException("Not connected");
             }
             

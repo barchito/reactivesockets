@@ -5,14 +5,13 @@ namespace ReactiveSockets
 {
     using System.Net.Sockets;
     using System.Threading.Tasks;
-    using Diagnostics;
+    using System.Diagnostics;
 
     /// <summary>
     /// Implements the <see cref="IReactiveClient"/> over TCP.
     /// </summary>
     public class ReactiveClient : ReactiveSocket, IReactiveClient
     {
-        private static readonly ITracer tracer = Tracer.Get<ReactiveClient>();
         private string hostname;
         private int port;
         private readonly Func<Stream, Stream> streamTransform;
@@ -63,7 +62,6 @@ namespace ReactiveSockets
             this.hostname = hostname;
             this.port = port;
             this.streamTransform = streamTransform;
-            tracer.ReactiveClientCreated(hostname, port);
         }
 
         /// <summary>
@@ -72,9 +70,7 @@ namespace ReactiveSockets
         public Task ConnectAsync()
         {
             var client = new TcpClient();
-            return Task.Factory
-                .FromAsync<string, int>(client.BeginConnect, client.EndConnect, hostname, port, null)
-                .ContinueWith(_ => Connect(client), TaskContinuationOptions.OnlyOnRanToCompletion);
+            return client.ConnectAsync(hostname,port).ContinueWith(_ => Connect(client), TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
         /// <summary>

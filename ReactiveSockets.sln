@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.3
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveSockets", "ReactiveSockets\ReactiveSockets.csproj", "{3B854D2F-1BC1-4080-A47A-9B53BA2F995D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveSockets.Tests", "ReactiveSockets.Tests\ReactiveSockets.Tests.csproj", "{0502F800-A9AC-41D6-A789-78B78A38CBB6}"
@@ -31,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveSockets.NetCore", "ReactiveSockets.NetCore\ReactiveSockets.NetCore.csproj", "{C784B328-1C6B-445C-A873-E8491EB4F14A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +61,10 @@ Global
 		{064DC835-F7BD-4D21-B702-3F22ACF598D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{064DC835-F7BD-4D21-B702-3F22ACF598D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{064DC835-F7BD-4D21-B702-3F22ACF598D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C784B328-1C6B-445C-A873-E8491EB4F14A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C784B328-1C6B-445C-A873-E8491EB4F14A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C784B328-1C6B-445C-A873-E8491EB4F14A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C784B328-1C6B-445C-A873-E8491EB4F14A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
